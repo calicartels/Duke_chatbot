@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles that extend Tailwind */
+@layer components {
+  .chat-container {
+    @apply h-full flex flex-col overflow-hidden;
+  }
+  
+  .message-list {
+    @apply flex-grow overflow-y-auto p-4 space-y-4;
+  }
+}
+
+/* Duke specific styles */
+.bg-duke-navy {
+  background-color: #012169;
+}
+
+.text-duke-navy {
+  color: #012169;
+}
+
+.border-duke-navy {
+  border-color: #012169;
+}
+
+.hover\:bg-duke-blue:hover {
+  background-color: #00539B;
+}
+
+.ring-duke-navy {
+  --tw-ring-color: #012169;
+}
