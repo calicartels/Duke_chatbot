@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { fetchResponse } from './services/api';
-import DukeChatDemo from './components/DukeChatDemo';
+import ChatInterface from './components/ChatInterface';
+import Header from './components/Header'; // Optional: if you want to use the Header component
 
 function App() {
   const [messages, setMessages] = useState([]);
@@ -77,15 +78,19 @@ function App() {
     setShowThinking(!showThinking);
   };
 
-  // Use the real implementation with API connection
+  // Now use ChatInterface instead of DukeChatDemo
   return (
-    <DukeChatDemo 
-      messages={messages}
-      loading={loading}
-      onSendMessage={sendMessage}
-      showThinking={showThinking}
-      onToggleThinking={toggleThinking}
-    />
+    <div className="flex flex-col min-h-screen">
+      <Header onToggleThinking={toggleThinking} showThinking={showThinking} />
+      <div className="flex-1 container mx-auto px-4 py-6">
+        <ChatInterface 
+          messages={messages}
+          onSendMessage={sendMessage}
+          loading={loading}
+          showThinking={showThinking}
+        />
+      </div>
+    </div>
   );
 }
 
