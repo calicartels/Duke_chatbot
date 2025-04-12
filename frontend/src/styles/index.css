@@ -4,24 +4,75 @@
 
 body {
   font-family: 'Inter', sans-serif;
+  @apply text-base; /* Base font size increase */
 }
 
 /* Message container styling */
 .message-container {
-  @apply max-w-3xl;
+  @apply max-w-3xl lg:max-w-4xl; /* Wider on larger screens */
 }
 
 .user-message {
-  @apply flex justify-end mb-6;
+  @apply flex justify-end mb-8; /* Increased vertical spacing */
 }
 
 .assistant-message {
-  @apply flex justify-start mb-6;
+  @apply flex justify-start mb-8; /* Increased vertical spacing */
 }
 
-/* Custom scrollbar */
+/* Message content styling */
+.message-content {
+  @apply px-5 py-4 text-base; /* Larger text & more padding */
+}
+
+/* Improve prose rendering for markdown */
+.prose {
+  @apply max-w-none text-base leading-relaxed;
+}
+
+.prose p, .prose li {
+  @apply text-base mb-4;
+}
+
+.prose pre {
+  @apply p-4 my-4 overflow-x-auto;
+}
+
+.prose code {
+  @apply text-sm px-1;
+}
+
+/* Input styling */
+input[type="text"] {
+  @apply text-base px-5 py-4 h-14; /* Larger input field */
+}
+
+button[type="submit"] {
+  @apply h-14 w-14; /* Matching larger button */
+}
+
+/* Evaluation badges */
+.evaluation-badge {
+  @apply text-sm px-3 py-1.5; /* Slightly larger badges */
+}
+
+/* Agent thinking toggle */
+.agent-thinking-toggle {
+  @apply text-sm px-3 py-1.5;
+}
+
+/* Header components */
+.header-title {
+  @apply text-2xl font-bold; /* Larger title */
+}
+
+.header-subtitle {
+  @apply text-base text-blue-200; /* Larger subtitle */
+}
+
+/* Custom scrollbar - keep as is */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px; /* Slightly wider scrollbar */
 }
 
 ::-webkit-scrollbar-track {
@@ -36,7 +87,7 @@ body {
   @apply bg-blue-400;
 }
 
-/* Custom animations */
+/* Keep animations as is */
 @keyframes pulse {
   0%, 100% {
     opacity: 0.6;
@@ -50,7 +101,7 @@ body {
   animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Custom shine effect for elements */
+/* Keep shine effect as is */
 .shine-effect {
   position: relative;
   overflow: hidden;

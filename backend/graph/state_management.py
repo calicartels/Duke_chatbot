@@ -82,3 +82,29 @@ class ConversationState:
             return {}
             
         return self.conversations[conversation_id]["context"]
+    
+    def get_recent_context(self, conversation_id: str, message_count: int = 3) -> str:
+        """
+        Get recent conversation context as a formatted string.
+        """
+        if conversation_id not in self.conversations:
+            return ""
+        
+        # Get the most recent messages
+        messages = self.conversations[conversation_id]["messages"]
+        recent_messages = messages[-message_count:] if len(messages) > 0 else []
+        
+        # Format as context string
+        context_lines = []
+        for msg in recent_messages:
+            role = "User" if msg["role"] == "user" else "Assistant"
+            content = msg["content"][:200] + "..." if len(msg["content"]) > 200 else msg["content"]
+            context_lines.append(f"{role}: {content}")
+        
+        if not context_lines:
+            return ""
+            
+        return "Recent conversation:\n" + "\n".join(context_lines)
+
+# Create an instance of the ConversationState class
+conversation_state = ConversationState()

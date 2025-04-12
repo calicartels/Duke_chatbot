@@ -19,6 +19,7 @@ gemini_client = GeminiClient(api_key=os.environ.get("GEMINI_API_KEY"))
 # Initialize the agent workflow
 agent_graph = create_agent_workflow(gemini_client)
 
+# Modify the chat endpoint in app.py
 @app.route('/api/chat', methods=['POST'])
 def chat():
     start_time = time.time()
@@ -29,15 +30,54 @@ def chat():
     if not user_message:
         return jsonify({"error": "No message provided"}), 400
     
+    # Get conversation context if available
+    conversation_context = ""
+    if conversation_id:
+        try:
+            from graph.state_management import conversation_state
+            conversation_context = conversation_state.get_recent_context(conversation_id)
+        except (ImportError, AttributeError) as e:
+            print(f"Warning: Could not load conversation context: {str(e)}")
+            # Continue without context if there's an error
+    
     # Process the message through the agent workflow
     try:
-        result = agent_graph.invoke({
+        # Initialize the state with basic information
+        initial_state = {
             "message": user_message,
             "conversation_id": conversation_id,
-        })
+        }
+        
+        # Add context if available
+        if conversation_context:
+            initial_state["context"] = conversation_context
+        
+        result = agent_graph.invoke(initial_state)
         
         # Add processing time
         result["processing_time"] = int((time.time() - start_time) * 1000)
+        
+        # Store the message in conversation history if we have conversation state
+        try:
+            if conversation_id:
+                from graph.state_management import conversation_state
+                # Store user message
+                conversation_state.add_message(
+                    conversation_id=conversation_id,
+                    role="user",
+                    content=user_message
+                )
+                # Store assistant response
+                conversation_state.add_message(
+                    conversation_id=conversation_id,
+                    role="assistant",
+                    content=result.get("response", ""),
+                    thinking=result.get("thinking_explanation"),
+                    tool_results=result.get("tool_results"),
+                    evaluation=result.get("evaluation")
+                )
+        except Exception as e:
+            print(f"Warning: Could not store conversation: {str(e)}")
         
         return jsonify(result)
     except Exception as e:

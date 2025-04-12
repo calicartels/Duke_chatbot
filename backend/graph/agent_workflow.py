@@ -7,6 +7,7 @@ from agents.evaluation_agent import EvaluationAgent
 from tools.duke_events_tool import DukeEventsSearchTool
 from tools.duke_future_events_tool import DukeFutureEventsSearchTool
 from tools.duke_general_tool import DukeGeneralInfoTool
+from tools.duke_ai_meng_tool import DukeAIMEngTool
 import os
 
 def create_agent_workflow(gemini_client: GeminiClient):
@@ -24,6 +25,10 @@ def create_agent_workflow(gemini_client: GeminiClient):
         DukeGeneralInfoTool(
             api_url=os.environ.get("DUKE_GENERAL_API_URL", "https://dukegeneral-695116221974.us-central1.run.app"),
             auth_token=os.environ.get("DUKE_API_AUTH_TOKEN")
+        ),
+        DukeAIMEngTool(
+            api_key=os.environ.get("GOOGLE_API_KEY"),
+            cx="40ad5871d1ccf4b4e"  # Your Programmable Search Engine ID
         )
     ]
     
@@ -60,6 +65,14 @@ def execute_tools(state: Dict[str, Any]) -> Dict[str, Any]:
     plan = state.get("plan", {})
     tools_to_use = plan.get("tools", [])
     
+    # If no tools (out of scope query), skip execution
+    if not tools_to_use:
+        return {
+            **state,
+            "tool_results": {},
+            "next": "thinking"
+        }
+    
     # Get tool instances from their names
     tool_dict = {
         "DukeEventsSearchTool": DukeEventsSearchTool(
@@ -73,6 +86,10 @@ def execute_tools(state: Dict[str, Any]) -> Dict[str, Any]:
         "DukeGeneralInfoTool": DukeGeneralInfoTool(
             api_url=os.environ.get("DUKE_GENERAL_API_URL", "https://dukegeneral-695116221974.us-central1.run.app"),
             auth_token=os.environ.get("DUKE_API_AUTH_TOKEN")
+        ),
+        "DukeAIMEngTool": DukeAIMEngTool(
+            api_key=os.environ.get("GOOGLE_API_KEY"),
+            cx="40ad5871d1ccf4b4e"  # Your Programmable Search Engine ID
         )
     }
     

@@ -10,12 +10,13 @@ class EvaluationAgent:
         self.gemini_client = gemini_client
         self.evaluation_criteria = ["accuracy", "relevance", "completeness", "clarity"]
     
-    def generate_response(self, query: str, information: Dict[str, Any]) -> str:
+    def generate_response(self, query: str, information: Dict[str, Any], context: str = "") -> str:
         """
-        Generate a response based on the gathered information.
+        Generate a response based on the gathered information and conversation context.
         """
         prompt = RESPONSE_GENERATION_PROMPT.format(
             query=query,
+            context=context,
             information=str(information)
         )
         
@@ -60,17 +61,34 @@ class EvaluationAgent:
         """
         query = state.get("message", "")
         tool_results = state.get("tool_results", {})
+        plan = state.get("plan", {})
+        context = state.get("context", "")  # Get context if available
         
-        # Generate a proposed response
-        proposed_response = self.generate_response(query, tool_results)
+        # Check if query was deemed out of scope (empty tools)
+        if not plan.get("tools"):
+            out_of_scope_response = "I'm sorry, but I can only answer questions about Duke University, its academic programs, campus life, or events. Your question appears to be outside my scope of knowledge. Could you ask something related to Duke University instead?"
+            return {
+                **state,
+                "proposed_response": out_of_scope_response,
+                "evaluation": {
+                    "accuracy": 10,
+                    "relevance": 10,
+                    "completeness": 10,
+                    "clarity": 10,
+                    "feedback": "Out of scope query correctly identified."
+                },
+                "response": out_of_scope_response,
+                "next": "final"
+            }
         
-        # Evaluate the response
+        # Continue with normal response generation for in-scope queries
+        proposed_response = self.generate_response(query, tool_results, context)
         evaluation = self.evaluate_response(query, tool_results, proposed_response)
         
         return {
             **state,
             "proposed_response": proposed_response,
             "evaluation": evaluation,
-            "response": proposed_response,  # Use the proposed response as the final response
+            "response": proposed_response,
             "next": "final"
         }
