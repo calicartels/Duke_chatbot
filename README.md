@@ -44,7 +44,7 @@ This repository contains two implementations of a Duke-focused agentic chatbot:
 
 ## Architecture
 
-![System Architecture](architecture.png)
+![System Architecture](Media/architecture.png)
 
 *Figure: System architecture showing data sources, Cloud Run functions, modular tools, agent workflow, and user interaction. This illustrates the agentic, modular, and cloud-native design of the chatbot.*
 
